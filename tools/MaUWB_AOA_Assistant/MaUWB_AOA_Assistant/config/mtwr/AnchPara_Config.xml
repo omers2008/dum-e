@@ -1,0 +1,12 @@
+<config>
+ <anc ID="0" Show="0" y="0.00" x="0.00" anchName="基站0" z="0.00"/>
+ <anc ID="1" Show="0" y="0.00" x="0.00" anchName="基站1" z="0.00"/>
+ <anc ID="2" Show="0" y="0.00" x="0.00" anchName="基站2" z="0.00"/>
+ <anc ID="3" Show="0" y="0.00" x="0.00" anchName="基站3" z="0.00"/>
+ <anc ID="4" Show="0" y="0.00" x="0.00" anchName="基站4" z="0.00"/>
+ <anc ID="5" Show="0" y="0.00" x="0.00" anchName="基站5" z="0.00"/>
+ <anc ID="6" Show="0" y="0.00" x="0.00" anchName="基站6" z="0.00"/>
+ <anc ID="7" Show="0" y="0.00" x="0.00" anchName="基站7" z="0.00"/>
+ <anc ID="8" Show="0" y="0.00" x="0.00" anchName="基站8" z="0.00"/>
+ <anc ID="9" Show="0" y="0.00" x="0.00" anchName="基站9" z="0.00"/>
+</config>

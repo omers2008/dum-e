@@ -1,0 +1,12 @@
+<config>
+ <third_connect Server_Port="8888" Auto="0" Server_IP="127.0.0.1"/>
+ <anc_connect Server_Port="8080" Auto="0" Server_IP="127.0.0.1"/>
+ <map Map_XOffset="0" Map_XScale="1.00" Map_path="" Map_YTurn="0" Map_YScale="1.00" Map_XTurn="0" Map_YOffset="0"/>
+ <grid Grid_Show="1" Grid_H="1.00" Grid_W="1.00"/>
+ <Coordinate Coord_H="10.00" Coord_W="20.00" Coord_Show="1" Coord_Y="0.00" Coord_X="0.00"/>
+ <origin Origin_Show="1"/>
+ <track TrackShow="1" TrackNum="10"/>
+ <show Show_TagName="1" Show_AncDist="1" Show_AncName="1" Show_AncIcon="1"/>
+ <arithmetic KalmanEnable="1" kalmanQx="0.00100000" ParaA="1.0000" kalmanQy="0.00100000" kalmanRy="0.00100000" ParaB="0.0000" kalmanDt="0.02000000" kalmanRx="0.00100000" Dimen="0" SysnTag="0" kalmanAlpha="0.02000000" Sigma="10" kalmanQz="0.00100000" kalmanRz="0.00100000" Method="1"/>
+ <scatter HorAngle="5" Y_min="0.00" Scale="120" Show_axisAnc="1" TrackNum="100" VerAngle="0" Enable="0" Show_axisName="1" Show_shadow="0" Dotsize="0.10" X_max="5.00" Y_max="5.00" Z_min="0.00" Theme="1" X_min="0.00" Z_max="5.00"/>
+</config>

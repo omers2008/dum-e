@@ -1,0 +1,8 @@
+<config>
+ <grid Grid_Show="1" Grid_H="1.00" Grid_W="1.00"/>
+ <Coordinate Coord_H="10.00" Coord_Show="1"/>
+ <origin Origin_Show="1"/>
+ <track TrackShow="1" TrackNum="10"/>
+ <show Show_TagName="1" Show_AncIcon="1"/>
+ <arithmetic/>
+</config>
