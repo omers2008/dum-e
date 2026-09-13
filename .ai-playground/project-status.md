@@ -8,14 +8,16 @@
 ---
 
 ## Current Status
-**Last Updated:** 2026-09-04
-**Current Phase:** Paused until next session; hardware bring-up blocked at Makerfabs Assistant COM-port detection
+**Last Updated:** 2026-09-13
+**Current Phase:** Waiting on hardware: Makerfabs support confirmed the anchor must be configured via a CH340 USB-UART adapter; need to buy a CH340 before continuing
 **Active Branch:** main tracking `origin/main` (`https://github.com/omers2008/dum-e.git`)
 
 ### What We're Working On Now
-- Getting clean serial data from the anchor. The CP2102 transport itself has now been validated on Windows: Silicon Labs Windows driver is installed, `COM5` appears healthy, and a TXD-to-RXD loopback test passed exactly.
-- With the anchor connected on Windows, `COM5` receives **zero bytes** at 9600, 38400, 57600, 115200, 230400, 460800, and 921600. The anchor board does show flashing red/green LEDs, so it is likely powered and alive, but it is not currently putting UART telemetry onto the connected CP2102 RX path.
-- Makerfabs MaUWB Assistant v3.66 has been downloaded from the official Makerfabs GitHub repo and launched on Windows. Computer Use successfully navigated to `UWB Product -> AOA Series -> Dev Board`, but the assistant's serial-port dropdown stayed empty even though Windows reports `COM5` as healthy.
+- **Makerfabs support email (received 2026-09-13) resolved the diagnosis:** the AOA2AN anchor "need to be set with CH340 before usage". A CH340 USB-UART adapter is required for the anchor's initial configuration; our CP2102 does not qualify. This likely explains both the zero-byte serial reads (unconfigured anchor may not stream telemetry) and the Makerfabs Assistant's empty port dropdown (it probably enumerates only CH340 COM ports).
+- Also from the email: the AOA2TA tag needs no setup, just power it on. The small-battery "AOA Tag PCBA" is for button/feedback only, not part of the positioning path. AOA2TA is a chipset; Makerfabs does not sell a separate board for it.
+- **Our tag is a bare castellated SMD module (photo 2026-09-13): label `JL-U2-CA`, Sn 100543, component marked 8060 (onboard ceramic antenna), u.FL/IPEX connector (optional external antenna), anchor/tag (Chinese: 基站/标签) checkboxes on the label.** The Gen2 Tag datasheet (read 2026-09-13) confirms: 3.3V/200mA supply, 12mA operating current, onboard full-directional antenna ("simply plug it in to use"), so **no external antenna is required** - just 3.3V on pin 16 and GND on pin 1. Do NOT feed it from a CH340 3.3V pin (200mA budget exceeds its ~25mA limit). Use the ESP32 dev board 3.3V pin or an AMS1117-3.3 regulator board.
+- The Gen2 repo ships `Driver/CH341SER.EXE` (the CH340 Windows driver), further confirming the toolchain expects a CH340 adapter.
+- Next hardware step: buy a CH340 USB-TTL adapter, wire it the same way (5V, GND, TX/RX crossed), and retry Makerfabs Assistant on Windows.
 - After clean serial works: build the heartbeat monitor POC (parse 0x2A frames, show anchor alive + distance/angle live).
 
 ### Active Side Quests
@@ -82,8 +84,8 @@ None yet - project just started.
 
 ## Known Issues & Technical Debt
 - [ ] CP2102/macOS transport ignores baud commands and replays an exact 63-byte pattern at impossible throughput. Windows loopback proves the adapter can work correctly under Windows, so this is likely a macOS driver/transport incompatibility or macOS-specific failure mode rather than total adapter failure.
-- [ ] Anchor is powered/flashing but raw serial on Windows `COM5` receives 0 bytes at all tested baud rates. Root cause is now narrowed to anchor connector/mode/firmware/vendor-tool configuration/tag dependency rather than the CP2102 adapter.
-- [ ] Makerfabs Assistant v3.66 does not enumerate `COM5` despite Windows reporting the CP2102 as healthy.
+- [ ] Anchor is powered/flashing but raw serial on Windows `COM5` receives 0 bytes at all tested baud rates. Per Makerfabs support (2026-09-13), the anchor requires initial setup via a CH340 adapter; the CP2102 path is the likely cause of both this and the Assistant issue below.
+- [ ] Makerfabs Assistant v3.66 does not enumerate `COM5` (CP2102). Likely the Assistant only enumerates CH340 ports; retest once a CH340 adapter arrives.
 
 ---
 
@@ -92,12 +94,16 @@ None yet - project just started.
 ### High Priority
 - [x] Test the same CP2102 + anchor on Windows at 9600, 115200, and 921600; record throughput and scan the 115200 stream for 81-byte `0x2A ... 0x23` frames
 - [x] Run CP2102 loopback on Windows to decide whether the adapter is faulty
-- [ ] Run Makerfabs Assistant as administrator and check whether the serial dropdown populates with `COM5`
-- [ ] If `COM5` still does not appear, test whether the older `CP210x Windows Drivers` package or a different USB-UART adapter makes the assistant enumerate a COM port
-- [ ] Use Makerfabs MaUWB Assistant: select `UWB Product -> AOA Series -> Dev Board`, connect to `COM5` at `115200`, and see whether the vendor tool receives/configures the board
+- [x] Contact Makerfabs support; answer received 2026-09-13: anchor requires CH340 for setup, tag needs power only
+- [ ] Buy a CH340 USB-TTL adapter
+- [x] Pull the Gen2 Tag datasheet and map the module pins (see Hardware & Protocol Reference); onboard antenna confirmed, no external antenna needed
+- [ ] Tag shopping list (bare JL-U2-CA module): 3.3V source (ESP32 3.3V pin or AMS1117-3.3 board) and a breakout/perfboard or two soldered wires on the VCC/GND castellations
+- [ ] Check which box (anchor/tag, 基站/标签) is marked on each module label
+- [ ] Once the CH340 arrives: install the CH340/CH341 Windows driver, wire anchor to CH340 (red -> 5V, black -> GND, green anchor TXD -> adapter RXD, yellow anchor RXD -> adapter TXD)
+- [ ] Retry Makerfabs Assistant (`UWB Product -> AOA Series -> Dev Board`), select the CH340 COM port at `115200`, and configure the anchor
+- [ ] After anchor setup, check whether raw serial now streams 81-byte `0x2A ... 0x23` frames
 - [ ] If Makerfabs Assistant sees the board, capture its mode/config and use that to update the custom serial parser plan
-- [ ] If Makerfabs Assistant also sees nothing, test whether powering/bringing up the tag changes anchor output
-- [ ] If vendor tool and tag tests still produce no data, identify the exact telemetry UART connector/pinout from Makerfabs docs or board traces before replacing hardware
+- [ ] If still silent after CH340 setup, power on the tag (needs no setup per Makerfabs) and retest anchor output
 - [ ] Write frame parser for the 81-byte positioning frame (spec below)
 - [ ] Build heartbeat monitor POC: Python serial reader + live view (terminal or small web page) showing anchor alive, frame rate, and per-tag distance/angle
 
@@ -114,6 +120,8 @@ None yet - project just started.
 
 ### Hardware & Protocol Reference (hard-won, keep)
 - **Board:** MaUWB_AOA Gen2 Anchor, STM32F103 + DW3000, UART-TTL at **115200**, 5V supply. Pins: TXD(1), RXD(3), GND(4), VCC(5).
+- **Tag module (Gen2 Tag datasheet v1.0, 16 castellated pins, 13x23x2mm):** pin 1 GND; pin 16 VCC **3.3V** (supply rated 3.3V/200mA, ~12mA operating); pin 11 UART_TX and pin 12 UART_RX at 115200; pin 13 reset (active low); pin 5 green status LED (flashes when powered); pin 6 red power LED (solid when on); pins 3/4 download CLK/DIO; pins 2,7,8,9,10,14,15 NC (leave floating). Onboard full-directional antenna; CH9 band 8987.2 MHz; tag continuously emits UWB, anchor computes distance+angle. No configuration needed - power only.
+- **Tag datasheet:** `datasheet/Tag/MaUWB_AOA Gen2 Tag_Data_Sheet_v1.0.docx` in the Gen2 repo; tag firmware bins in `datasheet/Tag/bin/`.
 - **Datasheet:** https://github.com/Makerfabs/MaUWB_AOA-Gen2 -> datasheet/Anchor/MaUWB_AOA Gen2 Anchor_Data_Sheet_v1.0.docx (downloaded and extracted this session).
 - **Positioning frame (binary, 81 bytes):**
   - head 0x2A (offset 0), cmd_len uint16 (1), cmd_saddr uint64 (3), cmd_daddr uint64 (11), cmd_type uint8 (19; 1=positioning, 0x64=positioning+RSSI), cmd_direct uint8 (20), tag_time uint32 (21), anc_addr16 uint16 (25), tag_addr16 uint16 (27), tag_sn uint8 (29), tag_mask uint8 (30)
@@ -141,18 +149,17 @@ None yet - project just started.
 ## Key Files & Structure
 ```
 Remote repo contains .ai-playground/project-status.md and local tools now include Makerfabs Assistant.
+docs/ - official Makerfabs Gen2 datasheets: Anchor and Tag Data Sheet v1.0 (.docx, saved 2026-09-13)
 tools/MaUWB_AOA_Assistant/ - extracted official Makerfabs Windows assistant (portable app)
 DUME_Clicker_Phrase_Selector/ - local untracked ESP32 clicker sketch
-Scratchpad (session-temporary, not preserved): serial probing scripts + anchor_ds.docx datasheet copy.
 ```
 
 ---
 
 ## How to Resume
-1. Run Makerfabs Assistant as administrator and select `UWB Product -> AOA Series -> Dev Board`.
-2. Check whether the top-right serial dropdown now lists `COM5`. If it does, select `COM5`, use `115200`, and click the play/open serial button.
-3. If the dropdown is still empty, investigate the assistant/driver compatibility: try the older Silicon Labs `CP210x Windows Drivers` package or a different USB-UART adapter and see whether the assistant enumerates that COM port.
-4. If the assistant can connect or shows data/config, record exactly which mode/product page worked and capture any serial/config values.
-5. If the assistant connects but sees no board data, power on/connect the tag and retest the anchor output; the board may require a tag/session before telemetry appears.
-6. If still silent, revisit exact telemetry connector/pinout from Makerfabs documentation or board tracing. CP2102 replacement is no longer the first suspect because Windows loopback passed.
-7. Once clean frames are available, build the parser and heartbeat monitor showing frame rate, checksum state, and tag distance/angle.
+1. If the CH340 adapter has arrived: install the CH340/CH341 Windows driver, wire the anchor to it (red -> 5V, black -> GND, green anchor TXD -> adapter RXD, yellow anchor RXD -> adapter TXD).
+2. Launch Makerfabs Assistant, select `UWB Product -> AOA Series -> Dev Board`, pick the CH340 COM port at `115200`, and open the serial connection to set up the anchor (Makerfabs: "The AOA2AN need to be set with CH340 before usage").
+3. Record exactly which mode/product page and config values the Assistant uses.
+4. After setup, read raw serial and look for 81-byte `0x2A ... 0x23` frames.
+5. If still silent, power on the tag (no setup needed per Makerfabs) and retest anchor output.
+6. Once clean frames are available, build the parser and heartbeat monitor showing frame rate, checksum state, and tag distance/angle.
