@@ -1,8 +1,8 @@
-#this is the project page for my 12th grade finals project in mechatronics #
+# this is the project page for my 12th grade finals project in mechatronics 
 the main idea of the project is a robot that has a Mauwb radar antenna with two tags connected to two separate esp32's 
 each of the tag esp's will have a screen, a joystick and a Mauwb tag
 the bot will have the antenna and a lidar to spot the users and avoid obstacles
-#what can the bot do in terms of commands#
+# what can the bot do in terms of commands
 the bot will have premade words to choose from for example
 1: select user, usually the second word can come after something like go(second example) made to tell the bot who to act apon
 2:go, will make the bot go to the selected target, selected target can be from selected user(example one) or me(third option)
