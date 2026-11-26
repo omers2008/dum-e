@@ -29,6 +29,7 @@
 | What Changed | From | To | Ref |
 |--------------|------|----|-----|
 | Next design target | Tag mount | Servo scanner for the anchor on the car | s5 |
+| Main idea | Office delivery robot | Restaurant waiter robot; "get" becomes "get / order" with an owner-set menu (see README, docs/robot-design.md) | 2026-11-26 |
 
 ---
 

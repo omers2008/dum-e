@@ -1,18 +1,36 @@
-# this is the project page for my 12th grade finals project in mechatronics 
-the main idea of the project is a robot that has a Mauwb radar antenna with two tags connected to two separate esp32's 
-each of the tag esp's will have a screen, a joystick and a Mauwb tag
-the bot will have the antenna and a lidar to spot the users and avoid obstacles
-# what can the bot do in terms of commands
-the bot will have premade words to choose from for example
+# DUM-E: a waiter robot
+this is the project page for my 12th grade finals project in mechatronics.
 
-1: select user, usually the second word can come after something like go(second example) made to tell the bot who to act apon
+DUM-E is a waiter robot for a restaurant or café. It finds the customer with a UWB "radar", brings the order to the table, and avoids obstacles and people on the way.
 
-2:go, will make the bot go to the selected target, selected target can be from selected user(example one) or me(third option)
+## how it works
+- **the robot** has a MaUWB_AOA Gen2 anchor (the "radar") that measures the distance and angle to every tag, a lidar to spot obstacles, and a tray with a lid that only opens at the right table.
+- **every table** has a remote: an ESP32 with a color screen, a joystick, buttons and a MaUWB_AOA Gen2 tag. The remote is based on my [ESP32 Pocket Arcade](https://github.com/omers2008/esp32-pocket-arcade), so customers can also play games while they wait.
+- **the owner / kitchen** has the same remote. It is used to set the menu, receive orders and confirm when an order is ready.
+- the remotes and the robot talk to each other over ESP-NOW.
 
-3:me, another select user option, selects the current user for commands like (go second example) ect.
+**POC (working now):** the radar is connected to the remote and the tag is connected to a power source. The remote shows the tag's distance and angle on a radar screen. Next step: building the robot itself.
 
-4:give,comes to the current user, opens the countainer, the user types what ther are giveing and then goes to the selected user(cant select me here) and the user can open the container with the tag esp(they will have a prompt telling them"user x has sent you ----(---- is the output if you dont type the name of what you are giveing)")
+## commands
+On the remote you build a short sentence: pick a command, then a table (1 to 4, or "me"). Joystick up/down changes the option, right goes to the next word (on the last word it becomes "send to DUM-E"), left goes back.
 
-5:get, select a user then write what you need then the bot goes to that user and will open the container and give the selected user a prompt to put it with a button to close and put the item and the option to reject the request for the item
+1. **go:** drives to the selected table, or to me.
+2. **give:** opens the tray, waits for me to put an item in, drives to the selected table and opens the tray for them. For example a waiter sending a dish to a table, or a customer sending something to another table.
+3. **get / order:** order from the menu, or ask another table for an item (see below).
+4. **follow:** follows the selected remote until another command, for example a waiter while serving.
+5. **wait:** stops where it is until another command.
+6. **wander:** a single-word command that roams with no target, using Google's [fly brain map](https://blog.google/innovation-and-ai/technology/research/male-fruit-fly-brain-map/). I'm considering adding a camera and maybe a light sensor so it can react to more than just the lidar.
 
-6:roam/wander,this is a single work command that does not accept any other tags like select user or me,this command makes the bot roam using googles fly brain scan program "https://blog.google/innovation-and-ai/technology/research/male-fruit-fly-brain-map/" im considering adding a camera so it could react with more then just a lidar and maybe a light sensor.
+### get / order and the menu
+"get" became "get / order". Besides asking another table for an item, a customer can order items from a menu set by the owner:
+
+1. **the owner sets the menu:** on their remote they add, change or remove items (dishes, drinks, desserts). The menu is saved on the robot and sent to every remote, so a change reaches every table right away.
+2. **the customer orders:** picks "get / order", scrolls the menu with the joystick, picks an item and sends it.
+3. **the order reaches the kitchen:** the owner's remote shows the item and the table number.
+4. **the order is ready:** staff put it in the robot's tray and confirm on the remote.
+5. **the robot serves:** drives to the table by its tag, opens the tray, and the customer confirms they took it.
+
+The old "get" still works: pick a table and ask it for an item, for example the owner sending the robot to collect dishes. Whoever is asked can also reject the request.
+
+## robot design
+Size, battery and charging, water and dirt resistance, stability and the full parts list are in [docs/robot-design.md](docs/robot-design.md).
