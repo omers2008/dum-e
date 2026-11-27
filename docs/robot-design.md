@@ -15,6 +15,18 @@ Design targets and part choices for the DUM-E waiter robot. Numbers are targets,
 | Tables | At least 2, up to 4 |
 | Menu | Up to about 20 items, set by the owner |
 
+## Lidar choice
+The lidar is a **Slamtec RPLIDAR C1**. It replaces the YDLIDAR X2 from the first plan.
+
+| Lidar | Price (Nov 2026) | Ranging / range | Why not / why |
+|---|---|---|---|
+| **RPLIDAR C1 (chosen)** | ₪200–227 on AliExpress with free delivery; $69 at DFRobot | ToF, 12 m (6 m on black), 5000 samples/s, 10 Hz, ±30 mm | IP54 dust and splash rating, which answers the water-and-dirt requirement. Well-known brand with good docs. |
+| LDROBOT D500 | ₪208 on AliExpress | ToF, 12 m, 5000 samples/s, 10 Hz | About the same performance and price, but no water/dust rating and thinner docs. |
+| LDROBOT D200 | ₪165 on AliExpress | Triangulation, 8 m | Cheapest, but triangulation is less accurate at distance. |
+| YDLIDAR X2 | About €80 | Triangulation, 8 m | Same price as the C1 with worse specs. |
+
+Wiring to the ESP32: 5 V power (about 230 mA, 1.15 W) and a 3.3 V UART at 460800 baud, straight to a free ESP32 UART with no level shifter. Buy the kit with the USB adapter board, so it can be tested on a computer first.
+
 ## Closed-loop control
 Driving to a table is a closed loop:
 
@@ -38,7 +50,7 @@ Alternative: a power-tool battery (Makita/DeWalt 18 V) with a printed adapter an
 - The electronics are in a closed PETG box with a TPU gasket and cable glands.
 - The tray is separate and removable, with a raised edge so spills stay in it.
 - The anchor can sit behind plastic (UWB passes through plastic, not metal).
-- The lidar needs a clear 360° view, so it sits low under an overhang with a small skirt.
+- The RPLIDAR C1 is IP54 rated, so splashes are fine, but it needs a clear 360° view, so it sits low under an overhang with a small skirt against dirt.
 - Fenders over the wheels.
 
 ## Shocks and stability
@@ -55,7 +67,7 @@ Alternative: a power-tool battery (Makita/DeWalt 18 V) with a printed adapter an
 | **Core** | ESP32 (one on the robot, one per remote) | Controls the robot and runs each remote |
 | | MaUWB_AOA Gen2 anchor | Measures the distance and angle to every tag |
 | | MaUWB_AOA Gen2 tags | One per table remote and one for the charging dock |
-| | YDLIDAR X2 | 360° obstacle detection |
+| | Slamtec RPLIDAR C1 | 360° obstacle detection: ToF, 12 m range, IP54; 5 V power, 3.3 V UART at 460800 baud |
 | | 2 × 12 V DC gear motors with encoders + motor driver | Drive the robot; the encoders make smooth closed-loop speed control possible |
 | | SG90 servo | Opens and closes the tray lid |
 | | 2" ST7789 TFT, joystick, buttons | The remote's screen and controls |

@@ -52,6 +52,7 @@
 | Low bracket with two M3 slots (54 mm apart, +-4 mm) bolts to the car plate | s5 |
 | CAD as build123d scripts + boolean overlap checks + three.js viewer | s5 |
 | One 5V >= 1 A supply for anchor, SG90 and ESP32 VIN; common ground | s5 |
+| Lidar: Slamtec RPLIDAR C1 (ToF, 12 m, IP54), replacing the YDLIDAR X2; buying from AliExpress or DFRobot | 2026-11-27 |
 
 ### Reversed/Abandoned Decisions
 | Original Decision | Changed To | Ref |
