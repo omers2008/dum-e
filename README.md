@@ -4,7 +4,7 @@ this is the project page for my 12th grade finals project in mechatronics.
 DUM-E is a waiter robot for a restaurant or café. It finds the customer with a UWB "radar", brings the order to the table, and avoids obstacles and people on the way.
 
 ## how it works
-- **the robot** has a MaUWB_AOA Gen2 anchor (the "radar") that measures the distance and angle to every tag, a lidar to spot obstacles, and a tray with a lid that only opens at the right table.
+- **the robot** has a MaUWB_AOA Gen2 anchor (the "radar") that measures the distance and angle to every tag, a Slamtec RPLIDAR C1 lidar to spot obstacles, and a tray with a lid that only opens at the right table.
 - **every table** has a remote: an ESP32 with a color screen, a joystick, buttons and a MaUWB_AOA Gen2 tag. The remote is based on my [ESP32 Pocket Arcade](https://github.com/omers2008/esp32-pocket-arcade), so customers can also play games while they wait.
 - **the owner / kitchen** has the same remote. It is used to set the menu, receive orders and confirm when an order is ready.
 - the remotes and the robot talk to each other over ESP-NOW.
